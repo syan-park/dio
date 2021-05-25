@@ -17,4 +17,4 @@ dependencies:
     path: ./plugins/cookie_manager
   test: ^1.16.0
   pedantic: ^1.10.0
-  test_coverage: ^0.5.0
+  test_coverage: ^0.5.0 
