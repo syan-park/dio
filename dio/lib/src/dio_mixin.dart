@@ -45,6 +45,7 @@ abstract class DioMixin implements Dio {
   @override
   Future<Response<T>> get<T>(
     String path, {
+    data,
     Map<String, dynamic>? queryParameters,
     Options? options,
     CancelToken? cancelToken,
@@ -683,7 +684,7 @@ abstract class DioMixin implements Dio {
     var data = options.data;
     List<int> bytes;
     Stream<List<int>> stream;
-    const allowPayloadMethods = ['POST', 'PUT', 'PATCH', 'DELETE'];
+    const allowPayloadMethods = ['POST', 'PUT', 'PATCH', 'DELETE', 'GET'];
     if (data != null && allowPayloadMethods.contains(options.method)) {
       // Handle the FormData
       int? length;
