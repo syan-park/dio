@@ -6,7 +6,7 @@ import '../options.dart';
 import '../dio_error.dart';
 import '../redirect_record.dart';
 
-typedef OnHttpClientCreate = dynamic Function(HttpClient client);
+typedef OnHttpClientCreate = HttpClient? Function(HttpClient client);
 
 HttpClientAdapter createAdapter() => DefaultHttpClientAdapter();
 
@@ -44,6 +44,7 @@ class DefaultHttpClientAdapter implements HttpClientAdapter {
 
     late HttpClientRequest request;
     try {
+      request = await reqFuture;
       if (options.connectTimeout > 0) {
         request = await reqFuture
             .timeout(Duration(milliseconds: options.connectTimeout));
@@ -52,7 +53,9 @@ class DefaultHttpClientAdapter implements HttpClientAdapter {
       }
 
       //Set Headers
-      options.headers.forEach((k, v) => request.headers.set(k, v));
+      options.headers.forEach((k, v) {
+        if (v != null) request.headers.set(k, '$v');
+      });
     } on SocketException catch (e) {
       if (e.message.contains('timed out')) {
         _throwConnectingTimeout();
@@ -67,23 +70,57 @@ class DefaultHttpClientAdapter implements HttpClientAdapter {
 
     if (requestStream != null) {
       // Transform the request data
-      await request.addStream(requestStream);
+      var future = request.addStream(requestStream);
+      if (options.sendTimeout > 0) {
+        future = future.timeout(Duration(milliseconds: options.sendTimeout));
+      }
+      try {
+        await future;
+      } on TimeoutException {
+        request.abort();
+        throw DioError(
+          requestOptions: options,
+          error: 'Sending timeout[${options.sendTimeout}ms]',
+          type: DioErrorType.sendTimeout,
+        );
+      }
     }
+
+    // [receiveTimeout] represents a timeout during data transfer! That is to say the
+    // client has connected to the server.
+    int receiveStart = DateTime.now().millisecondsSinceEpoch;
     var future = request.close();
-    if (options.connectTimeout > 0) {
-      future = future.timeout(Duration(milliseconds: options.connectTimeout));
+    if (options.receiveTimeout > 0) {
+      future = future.timeout(Duration(milliseconds: options.receiveTimeout));
     }
     late HttpClientResponse responseStream;
     try {
       responseStream = await future;
     } on TimeoutException {
-      _throwConnectingTimeout();
+      throw DioError(
+        requestOptions: options,
+        error: 'Receiving data timeout[${options.receiveTimeout}ms]',
+        type: DioErrorType.receiveTimeout,
+      );
     }
 
     var stream =
         responseStream.transform<Uint8List>(StreamTransformer.fromHandlers(
       handleData: (data, sink) {
-        sink.add(Uint8List.fromList(data));
+        if (options.receiveTimeout > 0 &&
+            DateTime.now().millisecondsSinceEpoch - receiveStart >
+                options.receiveTimeout) {
+          sink.addError(
+            DioError(
+              requestOptions: options,
+              error: 'Receiving data timeout[${options.receiveTimeout}ms]',
+              type: DioErrorType.receiveTimeout,
+            ),
+          );
+          responseStream.detachSocket().then((socket) => socket.destroy());
+        } else {
+          sink.add(Uint8List.fromList(data));
+        }
       },
     ));
 

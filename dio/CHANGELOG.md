@@ -1,3 +1,29 @@
+# 4.0.6
+- fix #1452
+
+# 4.0.5
+- require Dart `2.12.1` which fixes exception handling for secure socket connections (https://github.com/dart-lang/sdk/issues/45214)
+- Only delete file if it exists when downloading.
+- Fix `BrowserHttpClientAdapter` canceled hangs
+- Correct JSON MIME Type detection
+- [Web] support send/receive progress in web platform
+- refactor timeout logic
+- use 'arraybuffer' instead of 'blob' for xhr requests in web platform
+
+
+# 4.0.4
+- Fix fetching null data in a response
+
+# 4.0.3
+- fix #1311
+
+# 4.0.2
+- Add QueuedInterceptor
+- merge #1316 #1317
+
+# 4.0.1
+- merge pr #1177 #1196 #1205 #1224 #1225 #1227 #1256 #1263 #1291
+- fix #1257
 
 # 4.0.0
 
@@ -12,7 +38,7 @@ stable version
 
 # 4.0.0-prev1
 
- **Interceptors:** Add  `handler` for Interceptor APIs which can specify the subsequent interceptors processing logic more finely（whether to skip them or not)）
+ **Interceptors:** Add  `handler` for Interceptor APIs which can specify the subsequent interceptors processing logic more finely（whether to skip them or not)
 
 # 4.0.0-beta7
 

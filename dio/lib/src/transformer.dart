@@ -47,6 +47,15 @@ abstract class Transformer {
       listFormat: listFormat,
     );
   }
+
+  /// Following: https://mimesniff.spec.whatwg.org/#json-mime-type
+  static bool isJsonMimeType(String? contentType) {
+    if (contentType == null) return false;
+    final mediaType = MediaType.parse(contentType);
+    return mediaType.mimeType == 'application/json' ||
+        mediaType.mimeType == 'text/json' ||
+        mediaType.subtype.endsWith('+json');
+  }
 }
 
 /// The default [Transformer] for [Dio]. If you want to custom the transformation of
@@ -64,10 +73,11 @@ class DefaultTransformer extends Transformer {
   Future<String> transformRequest(RequestOptions options) async {
     var data = options.data ?? '';
     if (data is! String) {
-      if (_isJsonMime(options.contentType)) {
+      if (Transformer.isJsonMimeType(options.contentType)) {
         return json.encode(options.data);
       } else if (data is Map) {
-        options.contentType = Headers.formUrlEncodedContentType;
+        options.contentType =
+            options.contentType ?? Headers.formUrlEncodedContentType;
         return Transformer.urlEncodeMap(data);
       }
     }
@@ -96,9 +106,7 @@ class DefaultTransformer extends Transformer {
         sink.add(data);
         if (showDownloadProgress) {
           received += data.length;
-          if (options.onReceiveProgress != null) {
-            options.onReceiveProgress!(received, length);
-          }
+          options.onReceiveProgress?.call(received, length);
         }
       },
     ));
@@ -110,33 +118,31 @@ class DefaultTransformer extends Transformer {
         finalSize += chunk.length;
         chunks.add(chunk);
       },
-      onError: (e, stackTrace) {
-        completer.completeError(e, stackTrace);
+      onError: (Object error, StackTrace stackTrace) {
+        completer.completeError(error, stackTrace);
       },
-      onDone: () {
-        completer.complete();
-      },
+      onDone: () => completer.complete(),
       cancelOnError: true,
     );
     // ignore: unawaited_futures
     options.cancelToken?.whenCancel.then((_) {
       return subscription.cancel();
     });
-    if (options.receiveTimeout > 0) {
-      try {
-        await completer.future
-            .timeout(Duration(milliseconds: options.receiveTimeout));
-      } on TimeoutException {
-        await subscription.cancel();
-        throw DioError(
-          requestOptions: options,
-          error: 'Receiving data timeout[${options.receiveTimeout}ms]',
-          type: DioErrorType.receiveTimeout,
-        );
-      }
-    } else {
-      await completer.future;
-    }
+    // if (options.receiveTimeout > 0) {
+    //   try {
+    //     await completer.future
+    //         .timeout(Duration(milliseconds: options.receiveTimeout));
+    //   } on TimeoutException {
+    //     await subscription.cancel();
+    //     throw DioError(
+    //       requestOptions: options,
+    //       error: 'Receiving data timeout[${options.receiveTimeout}ms]',
+    //       type: DioErrorType.receiveTimeout,
+    //     );
+    //   }
+    // } else {
+    await completer.future;
+    //}
     // we create a final Uint8List and copy all chunks into it
     final responseBytes = Uint8List(finalSize);
     var chunkOffset = 0;
@@ -159,7 +165,8 @@ class DefaultTransformer extends Transformer {
     }
     if (responseBody.isNotEmpty &&
         options.responseType == ResponseType.json &&
-        _isJsonMime(response.headers[Headers.contentTypeHeader]?.first)) {
+        Transformer.isJsonMimeType(
+            response.headers[Headers.contentTypeHeader]?.first)) {
       final callback = jsonDecodeCallback;
       if (callback != null) {
         return callback(responseBody);
@@ -168,11 +175,5 @@ class DefaultTransformer extends Transformer {
       }
     }
     return responseBody;
-  }
-
-  bool _isJsonMime(String? contentType) {
-    if (contentType == null) return false;
-    return MediaType.parse(contentType).mimeType ==
-        Headers.jsonMimeType.mimeType;
   }
 }

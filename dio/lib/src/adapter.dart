@@ -3,9 +3,6 @@ import 'dart:typed_data';
 import 'options.dart';
 import 'redirect_record.dart';
 
-typedef CancelWrapper = Future Function(Future);
-typedef VoidCallback = dynamic Function();
-
 /// HttpAdapter is a bridge between Dio and HttpClient.
 ///
 /// Dio: Implements standard and friendly API for developer.
@@ -87,8 +84,7 @@ class ResponseBody {
     this.headers = const {},
     this.statusMessage,
     this.isRedirect = false,
-  }) : stream = Stream.fromIterable(
-            utf8.encode(text).map((e) => Uint8List.fromList([e])).toList());
+  }) : stream = Stream.value(Uint8List.fromList(utf8.encode(text)));
 
   ResponseBody.fromBytes(
     List<int> bytes,
@@ -96,6 +92,5 @@ class ResponseBody {
     this.headers = const {},
     this.statusMessage,
     this.isRedirect = false,
-  }) : stream = Stream.fromIterable(
-            bytes.map((e) => Uint8List.fromList([e])).toList());
+  }) : stream = Stream.value(Uint8List.fromList(bytes));
 }

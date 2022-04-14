@@ -4,15 +4,17 @@
 
 @TestOn('vm')
 import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:test/test.dart';
+
 import 'utils.dart';
 
 void main() {
   setUp(startServer);
   tearDown(stopServer);
   test('#test download1', () async {
-    const savePath = '../_download_test.md';
+    const savePath = 'test/_download_test.md';
     var dio = Dio();
     dio.options.baseUrl = serverUrl.toString();
     await dio.download(
@@ -28,7 +30,7 @@ void main() {
   });
 
   test('#test download2', () async {
-    const savePath = '../_download_test.md';
+    const savePath = 'test/_download_test.md';
     var dio = Dio();
     dio.options.baseUrl = serverUrl.toString();
     await dio.downloadUri(
@@ -42,11 +44,12 @@ void main() {
   });
 
   test('#test download error', () async {
-    const savePath = '../_download_test.md';
+    const savePath = 'test/_download_test.md';
     var dio = Dio();
     dio.options.baseUrl = serverUrl.toString();
-    var r =
-        await dio.download('/error', savePath).catchError((e) => e.response);
+    var r = await dio
+        .download('/error', savePath)
+        .catchError((e) => (e as DioError).response!);
     assert(r.data == 'error');
     r = await dio
         .download(
@@ -54,23 +57,26 @@ void main() {
           savePath,
           options: Options(receiveDataWhenStatusError: false),
         )
-        .catchError((e) => e.response);
+        .catchError((e) => (e as DioError).response!);
     assert(r.data == null);
   });
 
   test('#test download timeout', () async {
-    const savePath = '../_download_test.md';
+    const savePath = 'test/_download_test.md';
     var dio = Dio(BaseOptions(
       receiveTimeout: 1,
       baseUrl: serverUrl.toString(),
     ));
-    expect(dio.download('/download', savePath).catchError((e) => throw e.type),
+    expect(
+        dio
+            .download('/download', savePath)
+            .catchError((e) => throw (e as DioError).type),
         throwsA(DioErrorType.receiveTimeout));
     //print(r);
   });
 
   test('#test download cancellation', () async {
-    const savePath = '../_download_test.md';
+    const savePath = 'test/_download_test.md';
     var cancelToken = CancelToken();
     Future.delayed(Duration(milliseconds: 100), () {
       cancelToken.cancel();
@@ -82,7 +88,7 @@ void main() {
             savePath,
             cancelToken: cancelToken,
           )
-          .catchError((e) => throw e.type),
+          .catchError((e) => throw (e as DioError).type),
       throwsA(DioErrorType.cancel),
     );
     //print(r);

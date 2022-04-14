@@ -1,14 +1,13 @@
 // Copyright (c) 2014, the Dart project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
-@TestOn('vm')
 import 'dart:async';
 import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:test/test.dart';
 
 void main() {
-
   test('#test headers', () {
     var headers = Headers.fromMap({
       'set-cookie': ['k=v', 'k1=v1'],
@@ -41,12 +40,12 @@ void main() {
     assert(headers1.map.isEmpty == true);
   });
 
-  test('#send with an invalid URL', () {
-    expect(
-      Dio().get('http://http.invalid').catchError((e) => throw e.error),
-      throwsA(const TypeMatcher<SocketException>()),
+  test('#send with an invalid URL', () async {
+    await expectLater(
+      Dio().get('http://http.invalid'),
+      throwsA((e) => e is DioError && e.error is SocketException),
     );
-  });
+  }, testOn: "vm");
 
   test('#cancellation', () async {
     var dio = Dio();
@@ -57,20 +56,21 @@ void main() {
     });
 
     var url = 'https://accounts.google.com';
-    expect(
-      dio
-          .get(url, cancelToken: token)
-          .catchError((e) => throw CancelToken.isCancel(e)),
-      throwsA(isTrue),
+    await expectLater(
+      dio.get(url, cancelToken: token),
+      throwsA((e) => e is DioError && CancelToken.isCancel(e)),
     );
   });
 
   test('#status error', () async {
     var dio = Dio()..options.baseUrl = 'http://httpbin.org/status/';
 
-    expect(
-      dio.get('401').catchError((e) => throw e.response.statusCode),
-      throwsA(401),
+    await expectLater(
+      dio.get('401'),
+      throwsA((e) =>
+          e is DioError &&
+          e.type == DioErrorType.response &&
+          e.response!.statusCode == 401),
     );
 
     var r = await dio.get(

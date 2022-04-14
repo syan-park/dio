@@ -1,20 +1,19 @@
 
 
-文档语言: [English](https://github.com/flutterchina/dio) | [中文简体](README-ZH.md)
+文档语言: [English](https://github.com/flutterchina/dio) | [English](README.md)
+
+> 中文文档更新会较慢，请优先查看英文文档 [English](README.md)。
 
 # dio
 
-[![Pub](https://img.shields.io/pub/v/dio.svg?style=flat-square)](https://pub.dartlang.org/packages/dio)
-[![support](https://img.shields.io/badge/platform-flutter%7Cflutter%20web%7Cdart%20vm-ff69b4.svg?style=flat-square)](https://github.com/flutterchina/dio)
-
-
 dio是一个强大的Dart Http请求库，支持Restful API、FormData、拦截器、请求取消、Cookie管理、文件上传/下载、超时、自定义适配器等...
+
 
 ## 添加依赖
 
 ```yaml
 dependencies:
-  dio: ^4.0.0 
+  dio: ^4.0.6
 ```
 
 > 如果你是dio 3.x 用户，想了解4.0的变更，请参考 [4.x更新列表](./migration_to_4.x.md)!
@@ -33,25 +32,65 @@ void getHttp() async {
 }
 ```
 
+
+## awesome-dio
+
+🎉 A curated list of awesome things related to dio.
+
+| Plugins                                                      | Status                                                       | Description                                                  |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| [dio_cookie_manager](https://github.com/flutterchina/dio/tree/master/plugins/cookie_manager) | [![Pub](https://img.shields.io/pub/v/dio_cookie_manager.svg?style=flat-square)](https://pub.dartlang.org/packages/dio_cookie_manager) | A cookie manager for Dio                                     |
+| [dio_http2_adapter](https://github.com/flutterchina/dio/tree/master/plugins/http2_adapter) | [![Pub](https://img.shields.io/pub/v/dio_http2_adapter.svg?style=flat-square)](https://pub.dartlang.org/packages/dio_http2_adapter) | A Dio HttpClientAdapter which support Http/2.0               |
+| [dio_smart_retry](https://github.com/rodion-m/dio_smart_retry) | [![Pub](https://img.shields.io/pub/v/dio_smart_retry.svg?style=flat-square)](https://pub.dev/packages/dio_smart_retry) | Flexible retry library for Dio               |
+| [http_certificate_pinning](https://github.com/diefferson/http_certificate_pinning) | [![Pub](https://img.shields.io/pub/v/http_certificate_pinning.svg?style=flat-square)](https://pub.dev/packages/http_certificate_pinning) | Https Certificate pinning for Flutter             |
+| [curl_logger_dio_interceptor](https://github.com/OwnWeb/curl_logger_dio_interceptor) | [![Pub](https://img.shields.io/pub/v/curl_logger_dio_interceptor.svg?style=flat-square)](https://pub.dev/packages/curl_logger_dio_interceptor) | A Flutter curl-command generator for Dio.             |
+| [dio_cache_interceptor](https://github.com/llfbandit/dio_cache_interceptor) | [![Pub](https://img.shields.io/pub/v/dio_cache_interceptor.svg?style=flat-square)](https://pub.dev/packages/dio_cache_interceptor) | Dio HTTP cache interceptor with multiple stores respecting HTTP directives (or not)             |
+| [dio_http_cache](https://github.com/hurshi/dio-http-cache) | [![Pub](https://img.shields.io/pub/v/dio_http_cache.svg?style=flat-square)](https://pub.dev/packages/dio_http_cache) | A simple cache library for Dio like Rxcache in Android             |
+| [pretty_dio_logger](https://github.com/Milad-Akarie/pretty_dio_logger) | [![Pub](https://img.shields.io/pub/v/pretty_dio_logger.svg?style=flat-square)](https://pub.dev/packages/pretty_dio_logger) | Pretty Dio logger is a Dio interceptor that logs network calls in a pretty, easy to read format.            |
+
+
+如果您也想提供第三方组件，请移步 [here](https://github.com/flutterchina/dio/issues/347) .
+
+
 ## 内容列表
 
-- [示例](#示例)
-- [Dio APIs](#dio-apis)
-- [请求配置](#请求配置)
-- [响应数据](#响应数据)
-- [拦截器](#拦截器)
-- [Cookie管理](#cookie管理)
-- [错误处理](#错误处理)
-- [使用application/x-www-form-urlencoded编码](#使用applicationx-www-form-urlencoded编码)
-- [FormData](#formdata)
-- [转换器](#转换器)
-- [HttpClientAdapter](#httpclientadapter )
-- [设置Http代理](#设置Http代理)
-- [Https证书校验](#Https证书校验)
-- [Http2支持](#Http2支持)
-- [请求取消](#请求取消)
-- [继承 Dio class](#继承-dio-class)
-- [Features and bugs](#features-and-bugs)
+- [dio](#dio)
+  - [添加依赖](#添加依赖)
+  - [一个极简的示例](#一个极简的示例)
+  - [内容列表](#内容列表)
+  - [示例](#示例)
+    - [示例目录](#示例目录)
+  - [Dio APIs](#dio-apis)
+    - [创建一个Dio实例，并配置它](#创建一个dio实例并配置它)
+    - [请求方法别名](#请求方法别名)
+  - [请求配置](#请求配置)
+  - [响应数据](#响应数据)
+  - [拦截器](#拦截器)
+    - [完成和终止请求/响应](#完成和终止请求响应)
+    - [QueuedInterceptor](#queuedinterceptor)
+      - [例子](#例子)
+    - [日志](#日志)
+    - [Cookie管理](#cookie管理)
+    - [自定义拦截器](#自定义拦截器)
+  - [错误处理](#错误处理)
+    - [DioError 字段](#dioerror-字段)
+    - [DioErrorType](#dioerrortype)
+  - [使用application/x-www-form-urlencoded编码](#使用applicationx-www-form-urlencoded编码)
+  - [FormData](#formdata)
+    - [多文件上传](#多文件上传)
+  - [转换器](#转换器)
+    - [Flutter中设置](#flutter中设置)
+    - [其它示例](#其它示例)
+    - [执行流](#执行流)
+  - [HttpClientAdapter](#httpclientadapter)
+    - [设置Http代理](#设置http代理)
+    - [Https证书校验](#https证书校验)
+  - [Http2支持](#http2支持)
+  - [请求取消](#请求取消)
+  - [继承 Dio class](#继承-dio-class)
+  - [Copyright & License](#copyright--license)
+  - [Features and bugs](#features-and-bugs)
+  - [支持](#支持)
 
 
 ## 示例
@@ -222,23 +261,25 @@ response = await dio.request(
 
 为了方便使用，Dio提供了一些其它的Restful API, 这些API都是`request`的别名。
 
-**Future<Response> get(...)**
+```dart
+Future<Response> get(...)
 
-**Future<Response> post(...)**
+Future<Response> post(...)
 
-**Future<Response> put(...)**
+Future<Response> put(...)
 
-**Future<Response> delete(...)**
+Future<Response> delete(...)
 
-**Future<Response> head(...)**
+Future<Response> head(...)
 
-**Future<Response> put(...)**
+Future<Response> put(...)
 
-**Future<Response> path(...)**
+Future<Response> path(...)
 
-**Future<Response> download(...)**
+Future<Response> download(...)
 
-**Future<Response> fetch(RequestOptions)**      new*
+Future<Response> fetch(RequestOptions)
+```
 
 
 ## 请求配置
@@ -329,7 +370,7 @@ response = await dio.request(
 Response response = await dio.get('https://www.google.com');
 print(response.data);
 print(response.headers);
-print(response.request);
+print(response.requestOptions);
 print(response.statusCode);
 ```
 
@@ -375,12 +416,12 @@ class CustomInterceptors extends Interceptor {
   }
   @override
   Future onResponse(Response response, ResponseInterceptorHandler handler) {
-    print('RESPONSE[${response.statusCode}] => PATH: ${response.request?.path}');
+    print('RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions?.path}');
     return super.onResponse(response, handler);
   }
   @override
   Future onError(DioError err, ErrorInterceptorHandler handler) {
-    print('ERROR[${err.response?.statusCode}] => PATH: ${err.request.path}');
+    print('ERROR[${err.response?.statusCode}] => PATH: ${err.requestOptions?.path}');
     return super.onError(err, handler);
   }
 }
@@ -400,56 +441,20 @@ Response response = await dio.get('/test');
 print(response.data);//'fake data'
 ```
 
-### Lock/unlock 拦截器
+### QueuedInterceptor
 
-你可以通过调用拦截器的 `lock()`/`unlock` 方法来锁定/解锁拦截器。一旦请求/响应拦截器被锁定，接下来的请求/响应将会在进入请求/响应拦截器之前排队等待，直到解锁后，这些入队的请求才会继续执行(进入拦截器)。这在一些需要串行化请求/响应的场景中非常实用，后面我们将给出一个示例。
+如果同时发起多个网络请求，则它们是可以同时进入`Interceptor` 的（并行的），而 `QueuedInterceptor` 提供了一种串行机制：它可以保证请求进入拦截器时是串行的（前面的执行完后后面的才会进入拦截器）。
 
-```dart
-tokenDio = Dio(); //Create a new instance to request the token.
-tokenDio.options = dio.options.copyWith();
-dio.interceptors.add(InterceptorsWrapper(
-  onRequest:(Options options, handler){
-    // If no token, request token firstly and lock this interceptor
-    // to prevent other request enter this interceptor.
-    dio.interceptors.requestLock.lock();
-    // We use a new Dio(to avoid dead lock) instance to request token.
-    tokenDio.get('/token').then((response){
-       //Set the token to headers
-       options.headers['token'] = response.data['data']['token'];
-       handler.next(options); //continue
-    }).catchError((error, stackTrace) {
-       handler.reject(error, true);
-    }).whenComplete(() => dio.interceptors.requestLock.unlock());
-  }
-));
-```
+#### 例子
 
-**Clear()**
-
-你也可以调用拦截器的`clear()`方法来清空等待队列。
-
-### 别名
-
-当**请求**拦截器被锁定时，接下来的请求将会暂停，这等价于锁住了dio实例，因此，Dio示例上提供了**请求**拦截器`lock/unlock`的别名方法：
-
-**dio.lock() ==  dio.interceptors.requestLock.lock()**
-
-**dio.unlock() ==  dio.interceptors.requestLock.unlock()**
-
-**dio.clear() ==  dio.interceptors.requestLock.clear()**
-
-### 示例
-
-假设这么一个场景：出于安全原因，我们需要给所有的请求头中添加一个csrfToken，如果csrfToken不存在，我们先去请求csrfToken，获取到csrfToken后，再发起后续请求。 由于请求csrfToken的过程是异步的，我们需要在请求过程中锁定后续请求（因为它们需要csrfToken), 直到csrfToken请求成功后，再解锁，代码如下：
+假设这么一个场景：出于安全原因，我们需要给所有的请求头中添加一个csrfToken，如果csrfToken不存在，我们先去请求csrfToken，获取到csrfToken后再重试。假设刚开始的时候 csrfToken 为 null ，如果允许请求并发，则这些并发请求并行进入拦截器时 csrfToken 都为null，所以它们都需要去请求 csrfToken，这会导致 csrfToken 被请求多次，为了避免不必要的重复请求，可以使用 QueuedInterceptor，这样只需要第一个请求请求一次即可，示例代码如下：
 
 ```dart
-dio.interceptors.add(InterceptorsWrapper(
-  onRequest: (Options options, handler) async {
+dio.interceptors.add(QueuedInterceptorsWrapper(
+  onRequest: (options, handler) async {
     print('send request：path:${options.path}，baseURL:${options.baseUrl}');
     if (csrfToken == null) {
       print('no token，request token firstly...');
-      //lock the dio.
-      dio.lock();
       tokenDio.get('/token').then((d) {
         options.headers['csrfToken'] = csrfToken = d.data['data']['token'];
         print('request token succeed, value: ' + d.data['data']['token']);
@@ -457,7 +462,7 @@ dio.interceptors.add(InterceptorsWrapper(
         handler.next(options);
       }).catchError((error, stackTrace) {
         handler.reject(error, true);
-      }) .whenComplete(() => dio.unlock()); // unlock the dio
+      });
     } else {
       options.headers['csrfToken'] = csrfToken;
       handler.next(options);
@@ -466,7 +471,7 @@ dio.interceptors.add(InterceptorsWrapper(
 ));
 ```
 
-完整的示例代码请点击 [这里](https://github.com/flutterchina/dio/blob/master/example/interceptor_lock.dart).
+完整的示例代码请点击 [这里](https://github.com/flutterchina/dio/blob/develop/example/queued_interceptor_crsftoken.dart).
 
 ### 日志
 
@@ -484,7 +489,7 @@ dio.interceptors.add(LogInterceptor(responseBody: false)); //开启请求日志
 
 ### 自定义拦截器
 
-开发者可以通过继承`Interceptor` 类来实现自定义拦截器，这是一个简单的[缓存示例拦截器](https://github.com/flutterchina/dio/blob/master/example/custom_cache_interceptor.dart)。
+开发者可以通过继承`Interceptor/QueuedInterceptor` 类来实现自定义拦截器，这是一个简单的[缓存示例拦截器](https://github.com/flutterchina/dio/blob/master/example/custom_cache_interceptor.dart)。
 
 ## 错误处理
 
@@ -500,10 +505,10 @@ try {
   if (e.response) {
     print(e.response.data)
     print(e.response.headers)
-    print(e.response.request)
+    print(e.response.requestOptions)
   } else {
     // Something happened in setting up or sending the request that triggered an Error
-    print(e.request)
+    print(e.requestOptions)
     print(e.message)
   }
 }
